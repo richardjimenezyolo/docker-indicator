@@ -25,22 +25,28 @@ exports.getRunningContainers = (callback) => exec(`docker ps -a --format '{{.ID}
  * @param {String} container.name 
  * @param {String} container.id 
  * @param {String} container.status 
+ * @param {String} container.running
  */
 exports.toggleContainer = (container, cb) => {
   const labels = container.labels.split(',')
   const workingDir = labels.find(el => el.includes('com.docker.compose.project.working_dir')).split('=')[1]
   const service = labels.find(el => el.includes('com.docker.compose.service')).split('=')[1]
   if (container.running) {
+    console.log(`stoping container: ${container.name}`);
     exec(`docker-compose -f ${workingDir}/docker-compose.yml stop ${service}`, (err, data) => {
-      if (err) {}
+      if (err) {
+        alert(err)
+      }
       cb()
     })
   } else {
+    console.log(`starting container: ${container.name}`);
     exec(`docker-compose -f ${workingDir}/docker-compose.yml start ${service}`, (err, data) => {
-      if (err) {}
+      if (err) {
+        alert(err)
+      }
       cb()
     })
   }
-  console.log(container.running);
   container.running = !container.running
 }
